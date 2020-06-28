@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+
+// Message Object Building
 
 // Login Page
 class LoginPage extends StatefulWidget {
-  LoginPage({
-    Key key,
-    this.title
-  }): super(key: key);
+  LoginPage({Key key, this.title}) : super(key: key);
 
   // This widget is the login page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -25,7 +25,7 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State < LoginPage > {
+class _LoginPageState extends State<LoginPage> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
 
   @override
@@ -34,20 +34,20 @@ class _LoginPageState extends State < LoginPage > {
       obscureText: false,
       style: style,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        hintText: "Email",
-        border:
-        OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: "Email",
+          border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
     final passwordField = TextField(
       obscureText: true,
       style: style,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        hintText: "Password",
-        border:
-        OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: "Password",
+          border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
     final loginButton = Material(
@@ -59,26 +59,26 @@ class _LoginPageState extends State < LoginPage > {
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: _showDialog,
         child: Text("Login",
-          textAlign: TextAlign.center,
-          style: style.copyWith(
-            color: Colors.white, fontWeight: FontWeight.bold)),
+            textAlign: TextAlign.center,
+            style: style.copyWith(
+                color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Zappeats Kitchen App'),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(36.0),
+        appBar: AppBar(
+          title: const Text('Zappeats Kitchen App'),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(36.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: < Widget > [
+                  children: <Widget>[
                     SizedBox(
                       height: 155.0,
                       child: Image.asset(
@@ -99,11 +99,10 @@ class _LoginPageState extends State < LoginPage > {
                     ),
                   ],
                 ),
+              ),
             ),
           ),
-        ),
-      )
-    );
+        ));
   }
 
   // user defined function
@@ -117,9 +116,8 @@ class _LoginPageState extends State < LoginPage > {
           title: new Text("Login Success"),
           content: new Text("You are now logged in to Zappeats Kitchen"),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0))
-          ),
-          actions: < Widget > [
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("Proceed"),
@@ -135,7 +133,8 @@ class _LoginPageState extends State < LoginPage > {
   }
 
   Future navigateToSubPage(context) async {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => OrderGetPage()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => OrderGetPage()));
   }
 }
 
@@ -145,7 +144,7 @@ class OrderGetPage extends StatefulWidget {
   _OrderGetPageState createState() => _OrderGetPageState();
 }
 
-class _OrderGetPageState extends State < OrderGetPage > {
+class _OrderGetPageState extends State<OrderGetPage> {
   String _homeScreenText = "Waiting for token...";
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -154,50 +153,99 @@ class _OrderGetPageState extends State < OrderGetPage > {
   void initState() {
     super.initState();
     _firebaseMessaging.configure(
-      onMessage: (Map < String, dynamic > message) async {
+      onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
+        _showOrderDialog(message);
       },
-      onLaunch: (Map < String, dynamic > message) async {
+      onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
+        //_showOrderDialog(message);
       },
-      onResume: (Map < String, dynamic > message) async {
+      onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
+        _showOrderDialog(message);
       },
     );
     _firebaseMessaging.requestNotificationPermissions(
-      const IosNotificationSettings(
-        sound: true, badge: true, alert: true, provisional: true));
+        const IosNotificationSettings(
+            sound: true, badge: true, alert: true, provisional: true));
     _firebaseMessaging.onIosSettingsRegistered
-      .listen((IosNotificationSettings settings) {
-        print("Settings registered: $settings");
-      });
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
     _firebaseMessaging.getToken().then((String token) {
       assert(token != null);
       setState(() {
-        _homeScreenText = "Push Messaging token: $token";
+        //_homeScreenText = "Push Messaging token: $token";
+        _homeScreenText = "Your Accepted Orders will be listed Here";
       });
       print(_homeScreenText);
+      _sendTokenRequest(token);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Push Messaging Demo'),
-      ),
-      body: Material(
-        child: Column(
-          children: < Widget > [
-            Center(
-              child: Text(_homeScreenText),
-            ),
-
-          ],
+        appBar: AppBar(
+          title: const Text('Application Demo'),
         ),
-      ));
+        body: Material(
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: Text(_homeScreenText),
+              ),
+            ],
+          ),
+        ));
   }
 
+  _sendTokenRequest(token) async {
+    // make GET request
+    String url =
+        'https://kitchen-app.bizebot.com/token-retrieve.php?token=' + token;
+    Response response = await get(url);
+    // sample info available in response
+    int statusCode = response.statusCode;
+    Map<String, String> headers = response.headers;
+    String contentType = headers['content-type'];
+    String json = response.body;
+    // TODO convert json to object...
+  }
+
+  Widget _buildDialog(BuildContext context) {
+    return AlertDialog(
+      content: Text("New Order Received"),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
+      actions: <Widget>[
+        FlatButton(
+          child: const Text('ACCEPT'),
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+        ),
+        FlatButton(
+          child: const Text('CLOSE'),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showOrderDialog(Map<String, dynamic> message) {
+    showDialog<bool>(
+      context: context,
+      builder: (_) => _buildDialog(context),
+    ).then((bool shouldNavigate) {
+      if (shouldNavigate == true) {
+        //_navigateToItemDetail(message);
+      }
+    });
+  }
 }
 
 // Home Page of MainApp
@@ -217,7 +265,5 @@ class MainApp extends StatelessWidget {
 }
 
 void main() {
-  runApp(
-    MainApp()
-  );
+  runApp(MainApp());
 }
