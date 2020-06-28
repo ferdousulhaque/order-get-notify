@@ -4,6 +4,21 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+// Background Notification
+Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+  if (message.containsKey('data')) {
+    // Handle data message
+    final dynamic data = message['data'];
+  }
+
+  if (message.containsKey('notification')) {
+    // Handle notification message
+    final dynamic notification = message['notification'];
+  }
+
+  // Or do other work.
+}
+
 // Message Object Building
 
 // Login Page
@@ -157,6 +172,7 @@ class _OrderGetPageState extends State<OrderGetPage> {
         print("onMessage: $message");
         _showOrderDialog(message);
       },
+      //onBackgroundMessage: myBackgroundMessageHandler,
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
         //_showOrderDialog(message);
@@ -214,9 +230,11 @@ class _OrderGetPageState extends State<OrderGetPage> {
     // TODO convert json to object...
   }
 
-  Widget _buildDialog(BuildContext context) {
+  Widget _buildDialog(BuildContext context, dynamic message) {
+    //final dynamic orderTitle = message['data']['title'] ?? "007";
+    //print(message['data']['title']);
     return AlertDialog(
-      content: Text("New Order Received"),
+      content: Text("New Order: "+message['data']['title']),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
       actions: <Widget>[
@@ -239,7 +257,7 @@ class _OrderGetPageState extends State<OrderGetPage> {
   void _showOrderDialog(Map<String, dynamic> message) {
     showDialog<bool>(
       context: context,
-      builder: (_) => _buildDialog(context),
+      builder: (_) => _buildDialog(context, message),
     ).then((bool shouldNavigate) {
       if (shouldNavigate == true) {
         //_navigateToItemDetail(message);
