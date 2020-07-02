@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform;
+//import 'package:splashscreen/splashscreen.dart';
 
 // Background Notification
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
