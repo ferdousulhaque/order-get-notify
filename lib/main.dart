@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:flutter/foundation.dart' show TargetPlatform;
 
 // Background Notification
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
@@ -233,8 +234,11 @@ class _OrderGetPageState extends State<OrderGetPage> {
   Widget _buildDialog(BuildContext context, dynamic message) {
     //final dynamic orderTitle = message['data']['title'] ?? "007";
     //print(message['data']['title']);
+    var platform = Theme.of(context).platform;
     return AlertDialog(
-      content: Text("New Order: "+message['data']['title']),
+      content: Text(platform == TargetPlatform.iOS
+          ? "New Order: " + message['notification']['title']
+          : "New Order: " + message['data']['title']),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
       actions: <Widget>[
