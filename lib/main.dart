@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform;
-//import 'package:splashscreen/splashscreen.dart';
+import 'package:splashscreen/splashscreen.dart';
 
 // Background Notification
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
@@ -24,6 +24,32 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
 // Message Object Building
 
 // Splash Screen
+class SplashPage extends StatefulWidget {
+  @override
+  _SplashPageState createState() => new _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  Widget build(BuildContext context) {
+    return new SplashScreen(
+        seconds: 3,
+        navigateAfterSeconds: new LoginPage(title: 'Zappeats Restaurant Login'),
+        title: new Text(
+          'Welcome In Zappeats Kitchen',
+          style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+        ),
+        image: Image.asset(
+          "assets/c-logo.png",
+          fit: BoxFit.contain,
+        ),
+        backgroundColor: Colors.white,
+        styleTextUnderTheLoader: new TextStyle(),
+        photoSize: 100.0,
+        onClick: () => print("Flutter Egypt"),
+        loaderColor: Colors.yellow);
+  }
+}
 
 // Login Page
 class LoginPage extends StatefulWidget {
@@ -284,7 +310,7 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: LoginPage(title: 'Zappeats Restaurant Login'),
+      home: SplashPage(),
     );
   }
 }
