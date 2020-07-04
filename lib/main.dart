@@ -23,6 +23,8 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
 
 // Message Object Building
 
+// Splash Screen
+
 // Login Page
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);

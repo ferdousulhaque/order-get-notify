@@ -32,8 +32,16 @@ $message = $_POST["message"];
                 "id" => 1234
             ];
             $notify = new Notification($device_token,$detail);
-            $notify->callNotification();
+            $result = $notify->callNotification();
+            if($result){
+                echo "Message Sent";
+                echo "</p>";
+            }else{
+                echo "Message Not Sent";
+                echo "</p>";
+            }
         }
+
     ?>
 
     </body>
